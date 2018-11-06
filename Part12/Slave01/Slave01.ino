@@ -33,30 +33,30 @@ SLAVE1_DATA_STRUCTURE mydata_back;
 
 // Slave 1 - Back End - bottom ctrl panel!
 
-int but1;     // left bottom
-int but2;     // right bottom
-int but3;     // left top
-int but4;     // right top
+byte but1;     // left bottom
+byte but2;     // right bottom
+byte but3;     // left top
+byte but4;     // right top
 
-int home1 = 1;
-int home1a = 1;
-int home2 = 1;
-int home2a = 1;
-int home3 = 1;
-int home3a = 1;
-int home4 = 1;
-int home4a = 1;
-int home5 = 1;
-int home5a = 1;
-int home6 = 1;
-int home6a = 1;
+byte home1 = 1;
+byte home1a = 1;
+byte home2 = 1;
+byte home2a = 1;
+byte home3 = 1;
+byte home3a = 1;
+byte home4 = 1;
+byte home4a = 1;
+byte home5 = 1;
+byte home5a = 1;
+byte home6 = 1;
+byte home6a = 1;
 
-long home1Offset;
-long home2Offset;
-long home3Offset;
-long home4Offset;
-long home5Offset;
-long home6Offset;
+int home1Offset;
+int home2Offset;
+int home3Offset;
+int home4Offset;
+int home5Offset;
+int home6Offset;
 
 long home1Home;
 long home2Home;
@@ -65,40 +65,40 @@ long home4Home;
 long home5Home;
 long home6Home;
 
-int flag = 0;
+byte flag = 0;
 
-int motorSpeedFlag = 0;
+byte motorSpeedFlag = 0;
 
 int requested_state;
 
 unsigned long previousFilterMillis;   // digital pin filter
-int filterTime = 200;
+uint16_t filterTime = 200;
 
 unsigned long previousStartupmillis;
-int startupFlag = 0;
+byte startupFlag = 0;
 
 unsigned long previousMillis = 0;
 const long interval = 10;
 
-double hipRFiltered;          // value in mm
-double hipLFiltered;
-double hipRFiltered2;         // value in encoder counts  
-double hipLFiltered2;
-double shoulderRFiltered;     // value in mm
-double shoulderLFiltered;
-double shoulderRFiltered2;    // value in encoder counts
-double shoulderLFiltered2;
-double elbowRFiltered;        // value in mm
-double elbowLFiltered; 
-double elbowRFiltered2;       // value in encoder counts
-double elbowLFiltered2;
+float hipRFiltered;          // value in mm
+float hipLFiltered;
+float hipRFiltered2;         // value in encoder counts  
+float hipLFiltered2;
+float shoulderRFiltered;     // value in mm
+float shoulderLFiltered;
+float shoulderRFiltered2;    // value in encoder counts
+float shoulderLFiltered2;
+float elbowRFiltered;        // value in mm
+float elbowLFiltered; 
+float elbowRFiltered2;       // value in encoder counts
+float elbowLFiltered2;
 
-double hipROutput;            // actual output in encoder counts
-double hipLOutput;
-double shoulderROutput;       
-double shoulderLOutput;
-double elbowROutput;
-double elbowLOutput;
+float hipROutput;            // actual output in encoder counts
+float hipLOutput;
+float shoulderROutput;       
+float shoulderLOutput;
+float elbowROutput;
+float elbowLOutput;
 
 void setup() {
 
@@ -140,17 +140,17 @@ void setup() {
   // ***set mtor parameters for initial setup***
 
   // right leg
-  for (int axis = 0; axis < 2; ++axis) {
+  for (byte axis = 0; axis < 2; ++axis) {
     Serial3 << "w axis" << axis << ".controller.config.vel_limit " << 22000.0f << '\n';
     Serial3 << "w axis" << axis << ".motor.config.current_lim " << 20.0f << '\n';
   }
   // left leg
-  for (int axis = 0; axis < 2; ++axis) {
+  for (byte axis = 0; axis < 2; ++axis) {
     Serial2 << "w axis" << axis << ".controller.config.vel_limit " << 22000.0f << '\n';
     Serial2 << "w axis" << axis << ".motor.config.current_lim " << 20.0f << '\n';
   }
   // undercariage
-  for (int axis = 0; axis < 2; ++axis) {
+  for (byte axis = 0; axis < 2; ++axis) {
     odrive_serial  << "w axis" << axis << ".controller.config.vel_limit " << 22000.0f << '\n';
     odrive_serial  << "w axis" << axis << ".motor.config.current_lim " << 20.0f << '\n';
   }
@@ -321,17 +321,14 @@ void loop() {
           odrive1.SetPosition(1, (home1Offset-(8192*2)));  // back off one revolution 
 
           /* ********** commenting out so calibration takes place on the stand with the legs bent
-
           // time to boost the legs up
           digitalWrite(37, HIGH);   // yellow left
           digitalWrite(39, HIGH);   // yellow right
           flag = 2;       
         }
-
         else if (but4 == 0 || but3 == 0 && flag == 2) {
            digitalWrite(37, LOW);
            digitalWrite(39, LOW);           
-
            for (int axis = 0; axis < 2; ++axis) {
                 Serial2 << "w axis" << axis << ".controller.config.vel_limit " << 48000.0f << '\n';     // set motor speed to fast ODrive1               
            }
@@ -362,7 +359,6 @@ void loop() {
           odrive2.SetPosition(0, (home4Offset - 16384));      // move leg bent right
           odrive2.SetPosition(1, (home3Offset - 16384));      // move leg bent right
           delay (2000); // wait for leg to bend
-
           */
           
           // calibrate right leg undercarriage, ODrive axis 1
@@ -379,9 +375,7 @@ void loop() {
           delay (500);    // wait for that to properly finish
 
           /*     COMMENTING OUT -  CALIBRATION IS DONE WITH MANUAL ALIGNMENT
-
           // move undercarriage ODrive axis 1 under it hits the home switch 6
-
           while (home6a == 1) {
             home6 = digitalRead(53);
             if (home6 == 1) {
@@ -410,9 +404,7 @@ void loop() {
           odrive_serial << "w axis" << 1 << ".controller.config.vel_limit " << 48000.0f << '\n';     // set motor speed to fast for Odrive 0 / axis 1          
           odrive0.SetPosition(1, (home6Offset+87654));  // back off 25mm
           delay(3000);   // wait for leg to move out again   
-
           
-
           // put leg straight again
           odrive2.SetPosition(0, (home4Offset - 163840));      // move legs straight right
           odrive2.SetPosition(1, (home3Offset - 245760));      // move legs straight right    
@@ -451,7 +443,6 @@ void loop() {
           /*     COMMENTING OUT -  CALIBRATION IS DONE WITH MANUAL ALIGNMENT
                 
           // move undercarriage ODrive axis 0 under it hits the home switch 5
-
           while (home5a == 1) {
             home5 = digitalRead(51);
             if (home5 == 1) {
@@ -481,16 +472,12 @@ void loop() {
           odrive_serial << "w axis" << 0 << ".controller.config.vel_limit " << 48000.0f << '\n';     // set motor speed to fast for Odrive 0 / axis 0          
           odrive0.SetPosition(0, (home5Offset+87654));  // back off 25mm
           delay(3000);   // wait for leg to move out again
-
           
-
     
           // put leg straight again
           odrive1.SetPosition(0, (home2Offset - 163840));      // move legs straight left
           odrive1.SetPosition(1, (home1Offset - 245760));      // move legs straight left   
-
           delay(3000);    // wait for the leg to be straight 
-
           */
           flag = 5;       // proceed to next stage
         }
@@ -583,14 +570,8 @@ void loop() {
 
 //***************filter joint motions*****************
 
-double filter(double lengthOrig, double currentValue) {
-  double filter = 40;
-  double lengthFiltered =  (lengthOrig + (currentValue * filter)) / (filter + 1);
+float filter(float lengthOrig, float currentValue) {
+  float filter = 40;
+  float lengthFiltered =  (lengthOrig + (currentValue * filter)) / (filter + 1);
   return lengthFiltered;  
 }
-
-
-
-
-
-
